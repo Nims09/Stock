@@ -9,6 +9,11 @@ gem 'spring', :group => :development
 
 gem 'sqlite3'
 
+gem 'twitter'
+
+gem 'omniauth'
+gem 'omniauth-twitter'
+
 # SQLite 3
 group :development, :test do
 	gem 'rspec-rails', '~> 3.0'

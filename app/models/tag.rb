@@ -18,6 +18,8 @@ class Tag < ActiveRecord::Base
 	# 	=> Need to think about how this is done intially
 	# 	=> Perhaps come to some specified winow, or how do we know how many initial tweets we need, initial analysis 	
 	def intiate_sentiment
+		client = TwitterAPI.new.client
+
 
 	end
 end

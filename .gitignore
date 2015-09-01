@@ -15,3 +15,9 @@
 /log/*
 !/log/.keep
 /tmp
+
+# Ignore .ds stores 
+.DS_Store
+
+# Enviorment Variables
+config/environment_variables.yml

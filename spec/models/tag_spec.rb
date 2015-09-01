@@ -21,4 +21,13 @@ describe Tag do
 
 	end
 
+	context "intiate_sentiment" do
+
+		it "s" do 
+			test = FactoryGirl.create(:tag)
+			test.intiate_sentiment
+		end 
+
+	end
+
 end 
