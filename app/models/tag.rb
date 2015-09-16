@@ -19,13 +19,29 @@ class Tag < ActiveRecord::Base
 	# 	=> Perhaps come to some specified winow, or how do we know how many initial tweets we need, initial analysis 	
 	def intiate_sentiment
 
-		search = get_tweets_in_time_range( "#justin", (Time.now-1.weeks), Time.now)
+		initial_tweets = get_tweets_in_time_range self.name, (Time.now-1.weeks), Time.now 
 
-		search.each do |tweet|
-			puts tweet.text
+		initial_tweets.each do |tweet|
+			new_tweet = Tweet.new
+
+			new_tweet.favorite_count = tweet.favorite_count 
+			new_tweet.filter_level = tweet.filter_level 
+			new_tweet.retweet_count = tweet.retweet_count 
+			new_tweet.text = tweet.text 
+			new_tweet.created_at = tweet.created_at 
+			# TODO : This needs to be a new column its just replacing another pre-set column right now 
+			new_tweet.created_at = DateTime.strptime tweet.created_at, '%Y-%m-%d %H:%M:%S %z' 
+
+			new_tweet.save 
 		end
 
-		puts search.count
+		# commit_tweets_to_database tweets
+
+		# creates a tweet to save in the DB, checks sentiment on them for intial sentiment
+
+		# TODO : This should keep track of ranges searched, if somthing is in an already searched range, then just retrieve the tweets from the database
+		# => -- This will take care to make sure we don't retrieve duplicate time ranges of tweets and just query the DB --		
+		# => This is unessecary, we just need to SELECT FIRST matching a date range in the database
 
 	end
 
@@ -42,7 +58,6 @@ class Tag < ActiveRecord::Base
 		client = TwitterAPI.new.client
 
 		begin
-
 			return client.search(
 				search,
 				include_entities: true,
@@ -52,8 +67,10 @@ class Tag < ActiveRecord::Base
 			)
 		rescue Twitter::Error::Unauthorized
 			puts "Unauthorized credentials"
-
 			return []
 		end
 	end 
+
+	def commit_tweets_to_database(tweets)
+	end
 end

@@ -11,13 +11,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150825011040) do
+ActiveRecord::Schema.define(version: 20150903012259) do
 
   create_table "tags", force: :cascade do |t|
     t.string   "name"
     t.string   "sentiment"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "tweets", force: :cascade do |t|
+    t.integer  "favorite_count"
+    t.text     "filter_level"
+    t.integer  "retweet_count"
+    t.text     "text"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
 end
