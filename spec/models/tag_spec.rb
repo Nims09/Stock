@@ -29,10 +29,10 @@ describe Tag, :type => :model do
 	context "intiate_sentiment" do
 
 		it "has a helper for generated unprocessed tweets" do 
-		
 			tag_name = "#justin"
-			start_date = '2015-09-12 2:31:32 0'
-			end_date = '2015-09-13 2:31:32 0'
+			start_date = '2015-09-12 2:31:32 +0'
+			end_date = '2015-09-13 2:31:32 +0'
+			# Example: "2015-09-21 23:59:11 +0000"
 
 			tweets = unprocessed_tweets(3, tag_name, start_date, end_date)
 
@@ -44,11 +44,10 @@ describe Tag, :type => :model do
 		end
 
 
-		it "s" do 
-
+		it "makes a call for tweets" do 
 			tag_name = "#justin"
-			start_date = '2015-09-12 2:31:32 0'
-			end_date = '2015-09-13 2:31:32 0'
+			start_date = '2015-09-12 2:31:32 +0'
+			end_date = '2015-09-13 2:31:32 +0'
 
 			test = FactoryGirl.create(:tag, name: tag_name)
 
@@ -57,5 +56,7 @@ describe Tag, :type => :model do
 			test.intiate_sentiment
 		end 
 
+		it "saves a correct tweet"
 	end
+
 end 

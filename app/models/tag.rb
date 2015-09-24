@@ -18,21 +18,24 @@ class Tag < ActiveRecord::Base
 	# 	=> Need to think about how this is done intially
 	# 	=> Perhaps come to some specified winow, or how do we know how many initial tweets we need, initial analysis 	
 	def intiate_sentiment
-
 		initial_tweets = get_tweets_in_time_range self.name, (Time.now-1.weeks), Time.now 
 
 		initial_tweets.each do |tweet|
-			new_tweet = Tweet.new
+			new_tweet = Tweet.new 
+
+			# new_tweet.tag = self
 
 			new_tweet.favorite_count = tweet.favorite_count 
 			new_tweet.filter_level = tweet.filter_level 
 			new_tweet.retweet_count = tweet.retweet_count 
 			new_tweet.text = tweet.text 
-			new_tweet.created_at = tweet.created_at 
-			# TODO : This needs to be a new column its just replacing another pre-set column right now 
-			new_tweet.created_at = DateTime.strptime tweet.created_at, '%Y-%m-%d %H:%M:%S %z' 
+			new_tweet.tweeted_at = tweet.created_at 
 
-			new_tweet.save 
+			new_tweet.created_at = DateTime.strptime tweet.created_at.to_s, '%Y-%m-%d %H:%M:%S %z' 
+
+			if !new_tweet.save
+				dispatch_error "Failed to save tweet" 
+			end  
 		end
 
 		# commit_tweets_to_database tweets
@@ -66,11 +69,15 @@ class Tag < ActiveRecord::Base
 				until: until_time.to_date
 			)
 		rescue Twitter::Error::Unauthorized
-			puts "Unauthorized credentials"
+			dispatch_error "Unauthorized credentials"
 			return []
 		end
 	end 
 
 	def commit_tweets_to_database(tweets)
+	end
+
+	def dispatch_error(error)
+		puts error
 	end
 end

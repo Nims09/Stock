@@ -9,6 +9,7 @@
 #  text           :text
 #  created_at     :datetime         not null
 #  updated_at     :datetime         not null
+#  tweeted_at     :datetime
 #
 
 FactoryGirl.define do
