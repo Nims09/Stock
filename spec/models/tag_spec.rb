@@ -18,7 +18,7 @@ end
 
 describe Tag, :type => :model do 
 
-	context "validates" do 
+	describe "validates" do 
 
 		it "has a valid factory" do 
 			expect(FactoryGirl.create(:tag)).to be_valid
@@ -26,37 +26,62 @@ describe Tag, :type => :model do
 
 	end
 
-	context "intiate_sentiment" do
+	describe "#intiate_sentiment" do
+
+		before(:each) do 
+			@tag_name = "#justin"
+
+			@tag = FactoryGirl.create(:tag, name: @tag_name)
+
+			@now = Time.parse("1969-07-20 20:17:40")
+			allow(Time).to receive(:now).and_return(@now)
+
+
+			allow(@tag).to receive(:get_tweets_in_time_range).and_return(unprocessed_tweets(3, @tag_name, @now-1.weeks, @now))			
+		end
 
 		it "has a helper for generated unprocessed tweets" do 
-			tag_name = "#justin"
 			start_date = '2015-09-12 2:31:32 +0'
-			end_date = '2015-09-13 2:31:32 +0'
-			# Example: "2015-09-21 23:59:11 +0000"
+			end_date = '2015-09-13 2:31:32 +0000'
 
-			tweets = unprocessed_tweets(3, tag_name, start_date, end_date)
+			tweets = unprocessed_tweets(3, @tag_name, start_date, end_date)
 
 			expect(tweets.size).to eq 3
 			expect(tweets.first.favorite_count).to eq "3"
 			expect(tweets.first.created_at).to eq start_date
 			expect(tweets.last.created_at).to eq end_date
-			expect(tweets.last.text).to eq tag_name
+			expect(tweets.last.text).to eq @tag_name
 		end
 
 
 		it "makes a call for tweets" do 
-			tag_name = "#justin"
-			start_date = '2015-09-12 2:31:32 +0'
-			end_date = '2015-09-13 2:31:32 +0'
+			expect(@tag).to receive(:get_tweets_in_time_range).with(@tag_name, (@now-1.weeks), @now)
 
-			test = FactoryGirl.create(:tag, name: tag_name)
-
-			allow(test).to receive(:get_tweets_in_time_range).and_return(unprocessed_tweets(3, tag_name, start_date, end_date))
-
-			test.intiate_sentiment
+			@tag.intiate_sentiment
 		end 
 
-		it "saves a correct tweet"
+		it "saves a correct tweet" do 
+			allow_any_instance_of(Tweet).to receive(:save).and_return(true)			
+				
+			expect(@tag).not_to receive(:dispatch_error).with("Failed to save tweet")
+
+			@tag.intiate_sentiment
+		end
+
+		it "calls an error on an failed to save tweet" do
+			allow_any_instance_of(Tweet).to receive(:save).and_return(false)			
+				
+			expect(@tag).to receive(:dispatch_error).with("Failed to save tweet").at_least(:once)
+
+			@tag.intiate_sentiment
+		end
+
+		it "saves the parent ID" 
+
+	end
+
+	describe "#get_tweets_in_time_range" do
+		# TODO : Fill me in. 
 	end
 
 end 

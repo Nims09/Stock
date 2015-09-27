@@ -21,17 +21,13 @@ class Tag < ActiveRecord::Base
 		initial_tweets = get_tweets_in_time_range self.name, (Time.now-1.weeks), Time.now 
 
 		initial_tweets.each do |tweet|
-			new_tweet = Tweet.new 
-
-			# new_tweet.tag = self
+			new_tweet = self.tweets.new
 
 			new_tweet.favorite_count = tweet.favorite_count 
 			new_tweet.filter_level = tweet.filter_level 
 			new_tweet.retweet_count = tweet.retweet_count 
 			new_tweet.text = tweet.text 
 			new_tweet.tweeted_at = tweet.created_at 
-
-			new_tweet.created_at = DateTime.strptime tweet.created_at.to_s, '%Y-%m-%d %H:%M:%S %z' 
 
 			if !new_tweet.save
 				dispatch_error "Failed to save tweet" 
@@ -74,9 +70,7 @@ class Tag < ActiveRecord::Base
 		end
 	end 
 
-	def commit_tweets_to_database(tweets)
-	end
-
+	# TODO : Add more functionality to pass errors forward
 	def dispatch_error(error)
 		puts error
 	end
