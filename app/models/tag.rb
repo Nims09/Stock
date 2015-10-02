@@ -29,19 +29,16 @@ class Tag < ActiveRecord::Base
 			new_tweet.text = tweet.text 
 			new_tweet.tweeted_at = tweet.created_at 
 
+			# TODO : Needs test for failing to havea  correct sentiment set
+			new_tweet.determine_sentiment
+
 			if !new_tweet.save
 				dispatch_error "Failed to save tweet" 
 			end  
 		end
 
-		# commit_tweets_to_database tweets
 
 		# creates a tweet to save in the DB, checks sentiment on them for intial sentiment
-
-		# TODO : This should keep track of ranges searched, if somthing is in an already searched range, then just retrieve the tweets from the database
-		# => -- This will take care to make sure we don't retrieve duplicate time ranges of tweets and just query the DB --		
-		# => This is unessecary, we just need to SELECT FIRST matching a date range in the database
-
 	end
 
 	private

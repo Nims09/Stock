@@ -9,10 +9,13 @@ gem 'spring', :group => :development
 
 gem 'sqlite3'
 
+# Twitter
 gem 'twitter'
-
 gem 'omniauth'
 gem 'omniauth-twitter'
+
+# Sentiment Analysis
+gem "sentimentalizer"
 
 # SQLite 3
 group :development, :test do
