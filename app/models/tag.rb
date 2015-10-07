@@ -14,11 +14,15 @@ class Tag < ActiveRecord::Base
 
 	validates :name, presence: :true
 
+	# TODO : Needs sentiment restrictions
+
 	# TODO : Needs tweet object, as this will generate initial batch
 	# 	=> Need to think about how this is done intially
 	# 	=> Perhaps come to some specified winow, or how do we know how many initial tweets we need, initial analysis 	
 	def intiate_sentiment
 		initial_tweets = get_tweets_in_time_range self.name, (Time.now-1.weeks), Time.now 
+
+		sentiment = 0
 
 		initial_tweets.each do |tweet|
 			new_tweet = self.tweets.new
@@ -29,16 +33,17 @@ class Tag < ActiveRecord::Base
 			new_tweet.text = tweet.text 
 			new_tweet.tweeted_at = tweet.created_at 
 
-			# TODO : Needs test for failing to havea  correct sentiment set
+			# TODO : Needs test for failing to have a correct sentiment set
 			new_tweet.determine_sentiment
+
+			# TODO : Calculating initial sentiment then saving it
 
 			if !new_tweet.save
 				dispatch_error "Failed to save tweet" 
 			end  
 		end
 
-
-		# creates a tweet to save in the DB, checks sentiment on them for intial sentiment
+		# TODO : Determines Initial sentiment based off of initial tweets
 	end
 
 	private
