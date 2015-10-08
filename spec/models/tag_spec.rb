@@ -28,6 +28,13 @@ RSpec.describe Tag, type: :model do
 			expect(FactoryGirl.build(:tag, name: nil)).not_to be_valid
 		end
 
+		it "is invalid without a sentiment" do 
+			expect(FactoryGirl.build(:tag, sentiment: nil)).not_to be_valid
+		end
+
+		it "is invalid without a valid sentiment" do 
+			expect(FactoryGirl.build(:tag, sentiment: "INVALID")).not_to be_valid
+		end
 	end
 
 	describe "helpers" do 
@@ -88,6 +95,18 @@ RSpec.describe Tag, type: :model do
 
 			@tag.intiate_sentiment
 		end
+
+		it "sets the correct sentiment based on tweets" do 
+			allow_any_instance_of(Tweet).to receive(:determine_sentiment).and_return("positive")
+
+			expect(@tag.sentiment).to eq "positive"
+		end
+
+		it "creates an error if an invalid sentiment is returned" #do 
+		# 	allow_any_instance_of(Tweet).to receive(:determine_sentiment).and_return("INVALID")
+			
+		# 	expect(@tag).to receive(:dispatch_error).with("A tweet returned a bad sentiment").at_least(:once)
+		# end
 	end
 
 	describe "#get_tweets_in_time_range" do

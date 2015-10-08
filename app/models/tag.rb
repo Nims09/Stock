@@ -13,8 +13,14 @@ class Tag < ActiveRecord::Base
 	has_many :tweets
 
 	validates :name, presence: :true
+	validates_inclusion_of :sentiment, :in => ['positive', 'negative', 'neutral'], :allow_nil => false
 
 	# TODO : Needs sentiment restrictions
+	SENTIMENTS = ['positive', 'negative', 'neutral']
+
+	def self.sentiments
+		SENTIMENTS
+	end
 
 	# TODO : Needs tweet object, as this will generate initial batch
 	# 	=> Need to think about how this is done intially
@@ -33,17 +39,36 @@ class Tag < ActiveRecord::Base
 			new_tweet.text = tweet.text 
 			new_tweet.tweeted_at = tweet.created_at 
 
-			# TODO : Needs test for failing to have a correct sentiment set
 			new_tweet.determine_sentiment
 
-			# TODO : Calculating initial sentiment then saving it
+			# if !Tweet.sentiments.include? new_tweet.sentiment
+			# 	dispatch_error "A tweet returned a bad sentiment" 				
+			# end
 
 			if !new_tweet.save
 				dispatch_error "Failed to save tweet" 
-			end  
+			end
+			 
+			if new_tweet.sentiment == 'positive'
+				sentiment += 1
+			elsif new_tweet.sentiment == 'negative'
+				sentiment -= 1
+			end
 		end
 
+		# TODO : This is KEY - Addtionally, once we have tweets from the twitter API, we ALSO need to query the database for any tweets we may already have in the time window that have our tag keyword and consider them as well...? Or that may just be on different time window consideration
+
 		# TODO : Determines Initial sentiment based off of initial tweets
+		if sentiment > 0 
+			self.sentiment = 'positive'
+		elsif sentiment < 0 
+			self.sentiment  = 'negative'
+		else
+			self.sentiment = 'neutral'
+		end
+
+		# TODO : Tests failing to save tweets.. also needs tests on the tag dealign with caluclating senbtiment 
+				
 	end
 
 	private
